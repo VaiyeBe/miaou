@@ -1,7 +1,7 @@
 // Manages user preferences, including external profile infos and the choice of theme.
 //
 
-const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
+const	VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB table
 	Promise = require("bluebird"),
 	path = require('path'),
 	naming = require('./naming.js'),
@@ -10,7 +10,7 @@ const VALUE_MAX_LENGTH = 20, // must be not greater than the limit set in the DB
 	cache = require('bounded-cache')(500),
 	defaultPrefs = { // also defines the valid keys (max length: 6 chars)
 		notif:	'on_ping',	// when to raise a desktop notification : on_ping|on_message|none
-		sound:	'standard',	// sound on notification : standard|quiet|none (hidden today because only one sound)
+		sound:	'standard',	// sound on notification : standard|quiet|none (deprecated)
 		volume: '.7',		// notification volume : 0 to 1
 		datdpl:	'hover',	// date display : hover|on_breaks|always
 		nifvis:	'no',		// notifies even if the tab is visible : yes|no
@@ -56,7 +56,11 @@ var getUserPrefs = exports.get = function(userId){
 // user prefs page GET & POST
 exports.appAllPrefs = function(req, res){
 	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
-		return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
+		return {
+			name:p.name, ep:p.externalProfile,
+			fields:p.externalProfile.creation.fields,
+			oauth:p.externalProfile.creation.oauth
+		}
 	});
 	var error = '',
 		userPrefs;
@@ -178,6 +182,7 @@ exports.appAllPrefs = function(req, res){
 				langs: langs.legal,
 				userinfo: userinfo,
 				email: req.user.email,
+externalProfileInfos: externalProfileInfos,
 				avatarsrc: req.user.avatarsrc,
 				avatarkey: req.user.avatarkey,
 				pluginAvatars: pluginAvatars

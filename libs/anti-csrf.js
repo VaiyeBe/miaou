@@ -11,8 +11,13 @@
 
 module.exports = function(options){
 
-	var whitemap = new Set(options.whitelist);
+	var	whitemap = new Set(options.whitelist),
+		change = options.changeSecretAfterEveryPost||true;
 		
+	function rand(){
+		return (Math.random()*Math.pow(36,5)|0).toString(36);
+	}
+
 	return function(req, res, next){
 		var session = req.session;
 		if (!session) {
@@ -20,7 +25,7 @@ module.exports = function(options){
 			res.status(500).send("Session Management Problem. Please retry later.");
 			return;
 		}
-		if (!session.secret) session.secret = (Math.random()*Math.pow(36,5)|0).toString(36);
+		if (!session.secret) session.secret = rand();
 		if (req.method==='POST' && !whitemap.has(req.path)) {
 			var refererHost = (req.headers.referer||'').match(/^https?:\/\/([^\/\:]+)/)[1];
 			if (req.body.secret!==session.secret || refererHost!=req.hostname) {
@@ -32,6 +37,7 @@ module.exports = function(options){
 				res.status(403).send("There was a security problem, this request can't be processed.");
 				return;
 			}
+			if (change) session.secret = rand(); 
 		}
 		res.locals.secret = session.secret;
 		next();

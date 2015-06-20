@@ -56,6 +56,20 @@ module.exports = {
 		"./plugins/hashcolor/plugin.js",
 	],
 
+	// plugin specific configurations
+	"pluginConfig":{
+		"Battle.net":{
+			"oauth": {
+				"url":"https://eu.battle.net/oauth/authorize",	
+				"params": {
+					"client_id":"register to get a key",
+					"scope":"wow.profile sc2.profile",
+					"response_type":"code"
+				}
+			}
+		}
+	},
+
 	// available themes. The first one is both the default theme and the one
 	//  used on smartphones
 	themes: [

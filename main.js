@@ -1,5 +1,7 @@
 "use strict";
 
+require('./libs/pisa.js');
+
 var	fs = require('fs'),
 	config,
 	server = require('./libs/server.js');

@@ -72,6 +72,7 @@ function configureOauth2Strategies(){
 // define the routes to be taken by GET and POST requests
 function defineAppRoutes(){
 	var	auths = require('./auths.js').configure(miaou),
+		oauth = require('./oauth.js').configure(miaou),
 		rooms = require('./rooms.js').configure(miaou),
 		messages = require('./messages.js').configure(miaou),
 		upload = require('./upload.js').configure(miaou),
@@ -116,6 +117,8 @@ function defineAppRoutes(){
 	map('post', '/room', rooms.appPostRoom);
 	map('get', '/rooms', rooms.appGetRooms);
 	map('post', '/rooms', rooms.appPostRooms);
+	map('get', '/check-oauth/:pluginName', oauth.appGetCheckOauth);
+	map('get', '/oauthcb/:pluginName', oauth.appGetOauthCb);
 	map('get', '/auths', auths.appGetAuths);
 	map('post', '/auths', auths.appPostAuths);
 	map('all', '/username', profile.appAllUsername, true);
