@@ -35,6 +35,10 @@ miaou(function(usr, ed, locals, mod, time, ws){
 			}));
 		}
 	}
+
+	usr.nbRecentUsers = function(){
+		return recentUsers.length;
+	}
 	
 	usr.recentNamesStartingWith = function(s){
 		return recentUsers.filter(function(u){ return !u.name.lastIndexOf(s,0) }).map(function(u){ return u.name });

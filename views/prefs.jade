@@ -97,7 +97,7 @@ html
 															input(type=(field.type||'text'),name=field.name)
 														if field.notice
 															td= field.notice
-											if ep.oauth
+											if ep.oauth && user.name=="dystroy"
 												a(href="check-oauth/"+ep.name,target="_blank") Use OAuth (you must be connected in another page)
 											if ep.creationDescription
 												p !{ep.creationDescription}
