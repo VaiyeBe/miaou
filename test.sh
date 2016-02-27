@@ -7,7 +7,10 @@
 (echo "var miaou=function(f){f(miaou.fmt)};miaou.fmt={};module.exports=miaou.fmt;"; cat src/main-js/miaou.fmt.js; cat src/main-js/miaou.fmt.Table.js) > test/format/miaou.format.node.js
 
 # calling buster
-BUSTER_REPORTER=specification buster-test
+#BUSTER_REPORTER=specification testResult = $(buster-test)
+testResult=$(buster-test)
 
 # cleaning
 rm test/format/miaou.format.node.js
+echo "TTT"
+echo "result: ${testResult}"
