@@ -10,8 +10,10 @@ let	gulp = require("gulp"),
 	eslint = require('gulp-eslint'),
 	del = require("del"),
 	gulpif = require("gulp-if"),
+	gutil = require("gulp-util"),
 	uglify = require("gulp-uglify");
 
+require("./test/gulp-test.js");
 
 let mode = {
 	watch: false,
@@ -227,4 +229,4 @@ gulp.task("watch", ["set-watch-mode", "build"], ()=>{
 
 });
 
-gulp.task("default", ["build"]);
+gulp.task("default", ["test"]);
