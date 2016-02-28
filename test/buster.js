@@ -14,6 +14,5 @@ config["all"] = {
         "ludogene/tribo.js",
         "stackoverflow/url.js",
         "naming/name-cleaning.js",
-	"fail/fail.js"
     ]	
 };
