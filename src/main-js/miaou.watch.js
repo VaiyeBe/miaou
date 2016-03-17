@@ -10,7 +10,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 
 	// tell if the room is watched
 	watch.watched = function(roomId){
-		return $('#watches .watch[rid='+roomId+']').length>0;
+		return $('#watches .watch[rid="'+roomId+'"]').length>0;
 	}
 
 	function updateDimensions(){
@@ -87,7 +87,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	}
 
 	watch.remove = function(roomId){
-		$('#watches .watch[rid='+roomId+']').remove();
+		$('#watches .watch[rid="'+roomId+'"]').remove();
 		if (roomId===locals.room.id) locals.room.watched = false;
 		$('#watch').text('watch');
 		updateDimensions();
@@ -96,7 +96,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	watch.incr = function(incr){
 		var roomId = incr.r;
 		console.log("watch.incr", roomId);
-		var $w =  $('#watches .watch[rid='+roomId+']');
+		var $w =  $('#watches .watch[rid="'+roomId+'"]');
 		if (!$w.length) return console.log('no watch!');
 		$w.addClass('has-unseen');
 		var $wc = $w.find('.count');
@@ -116,13 +116,13 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	watch.setPings = function(roomIds){
 		$('#watches .watch .count').removeClass('ping');
 		roomIds.forEach(function(rid){
-			$('#watches .watch[rid='+rid+'] .count').addClass('ping');
+			$('#watches .watch[rid="'+rid+'"] .count').addClass('ping');
 		});
 		updateGlobalIcon();
 	}
 
 	watch.raz = function(roomId){
-		$('#watches .watch[rid='+roomId+'] .count').removeClass('has-unseen').empty();
+		$('#watches .watch[rid="'+roomId+'"] .count').removeClass('has-unseen').empty();
 		if (!$('.watch .count.has-unseen').length) notif.setHasWatchUnseen(false);
 		updateDimensions();
 		updateGlobalIcon();
@@ -140,7 +140,13 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 
 	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
+		console.log("entering .watch in #watches");
+		// if ($(this).hasClass("open")) {
+		// 	console.log("already open");
+		// 	return;
+		// }
 		$('.watch').removeClass('open').find('.watch-panel').remove();
+		console.log("nb watch panels:", $('.watch-panel').length);
 		var	$w = $(this), w = $w.dat('watch'), entertime = Date.now(),
 			off = $w.offset(), ww = $(window).width(),
 			nbunseen = +$w.find('.count').text()||0,
@@ -150,6 +156,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			if (requiredrid!==w.id) {
 				return;
 			}
+			console.log("positionning watch drawer ==================");
 			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
@@ -179,12 +186,34 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 				});
 			}
 		}
-		$.get('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, function(dat){
+		window.fetch('json/messages/last?n='+nbrequestedmessages+'&room='+w.id, { credentials: 'same-origin' })
+		.then(function(response){
+			return response.json();
+		})
+		.then(function(dat){
 			setTimeout(display, 250 + entertime - Date.now(), dat);
 		});
-	}).on('mouseleave', '.watch', function(){
+	}).on('mouseout', '.watch', function(e){
+		console.log("IS WATCH:", $(this).hasClass("watch"));
+		console.log("leaving .watch", this, "target:", e.target);
+		var $watchPanel = $(this).find('.watch-panel');
+		console.log("watchpanel:", $watchPanel);
+		if ($watchPanel.contains(e)) {
+			console.log("over watch panel");
+			return;
+		}
 		requiredrid = 0;
-		$('.watch').removeClass('open').find('.watch-panel').remove();
+		$(this).removeClass('open');
+		$watchPanel.remove();
+		return false;
+	}).on('mouseout', '.watch-panel', function(e){
+		var $watch = $(this).closest('.watch');
+		if ($watch.contains(e)) {
+			console.log("over watch");
+			return;
+		}
+		requiredrid = 0;
+		$watch.removeClass('open').find('.watch-panel').remove();
 	}).on('click', '.watch', function(){
 		notif.userAct();
 		var w = $(this).dat('watch');

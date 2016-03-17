@@ -24,7 +24,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	notif.userAct = function(mid){
 		lastUserAction = Date.now();
 		// we assume the user sees the most recent messages if he acts
-		$('#messages .message:gt(-10)').each(function(){
+		$('#messages .message').slice(-10).each(function(){
 			notif.removePing($(this).attr('mid'), true, true);
 		});
 		notif.removePing(mid, true, true);
@@ -140,7 +140,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 			if (notifications[i].mid==mid) {
 				console.log('removePing', mid);
 				if (flash) {
-					var $md = $('#messages .message[mid='+mid+']');
+					var $md = $('#messages .message[mid="'+mid+'"]');
 					if ($md.length) {
 						md.goToMessageDiv($md);
 					}
@@ -163,7 +163,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	notif.touch = function(mid, ping, from, text, r, $md){
 		r = r || locals.room;
 		var	visible = vis(), lastUserActionAge = Date.now()-lastUserAction;
-		if (ping && (mid||$md) && !$('#mwin[mid='+mid+']').length) {
+		if (ping && (mid||$md) && !$('#mwin[mid="'+mid+'"]').length) {
 			if (visible  && lastUserActionAge<2000) {
 				md.goToMessageDiv(mid||$md);
 				return;

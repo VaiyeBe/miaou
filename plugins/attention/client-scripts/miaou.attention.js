@@ -48,7 +48,7 @@ miaou(function(attention, chat, locals, plugins, ws){
 	}
 
 	function onAlert(alert){
-		var $icon = $('#notable-messages .message[mid='+alert.message+'] .attention-icon');
+		var $icon = $('#notable-messages .message[mid="'+alert.message+'"] .attention-icon');
 		$icon.removeClass('attention-action').addClass('attention-alert').dat('attention-alert', alert);
 		if (alert.creator===locals.me.id) {
 			$icon.addClass('attention-seen');
@@ -59,7 +59,7 @@ miaou(function(attention, chat, locals, plugins, ws){
 	}
 
 	function onRemove(mid){
-		var $icon = $('#notable-messages .message[mid='+mid+'] .attention-icon');
+		var $icon = $('#notable-messages .message[mid="'+mid+'"] .attention-icon');
 		$icon.removeClass('attention-alert').removeClass('attention-seen');
 	}
 

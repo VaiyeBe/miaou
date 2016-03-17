@@ -23,7 +23,7 @@ miaou(function(md, plugins, ws){
 
 	// this is called on initial rendering and when other users vote
 	function onreceivevotes(data){
-		$('.message[mid='+data.mid+']').each(function(){
+		$('.message[mid="'+data.mid+'"]').each(function(){
 			var $table = $('.survey-table', this),
 				$inputs = $table.find('input'),
 				sum = 0;

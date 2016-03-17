@@ -10,7 +10,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	// diff  : +1 or -1
 	// level : up, down, star, pin
 	md.applyVote = function(o){
-		$('.message[mid='+o.mid+']').each(function(){
+		$('.message[mid="'+o.mid+']"').each(function(){
 			var	$md = $(this),
 				m = $md.dat('message');
 			m[o.level] = (m[o.level]||0)+o.diff;
@@ -37,6 +37,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 		if (!gui.mobile) wz.updateAll();
 		return false;
 	}
+
 	md.closer = function(e){
 		var	wab = gui.isAtBottom(),
 			$md = $(this).removeClass('closer').addClass('opener').closest('.message');
@@ -106,15 +107,17 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 	md.goToMessageDiv = function(arg){
 		var	$messages = gui.$messageScroller,
 			mstop = $messages.offset().top,
-			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid='+arg+']', $messages) : arg;
+			$message = typeof arg === "number" || typeof arg === "string" ? $('.message[mid="'+arg+'"]', $messages) : arg;
 		if (!$message.length) return;
 		$message.addClass('goingto');
 		setTimeout(function(){
 			var mtop = $message.offset().top;
 			if (gui.mobile) {
 				$('html,body').animate({scrollTop: mtop-72}, 400);
+				//window.scrollTo(0, mtop-72);
 			} else if (mtop<mstop || mtop>mstop+$messages.height()) {
 				$messages.animate({scrollTop: mtop-mstop+$messages.scrollTop()-25}, 400);
+				//$messages.get(0).scrollTop += mtop-mstop-25;
 			}
 			setTimeout(function(){ $message.removeClass('goingto'); }, 3000);
 			hist.showPage();

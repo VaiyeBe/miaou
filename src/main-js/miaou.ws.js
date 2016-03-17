@@ -122,6 +122,7 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 			gui.scrollToBottom();
 		})
 		.on('pm_room', function(roomId){
+			console.log("received pm_room", roomId);
 			location = roomId;
 		})
 		.on('go_to', function(messageId){

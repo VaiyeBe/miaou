@@ -10,11 +10,11 @@ miaou(function(){
 	//  cssClass (optional)
 	miaou.dialog = function(options){
 		miaou.prof.hide();
-		var $d = $('<div class=dialog/>').hide().addClass(options.cssClass||'small');
-		$d.append($('<div class=dialog-title/>').text(options.title||''));
-		$d.append($('<div class=dialog-content/>').append(options.content));
-		var buttons = options.buttons||{OK:null},
-			$buttons = $('<div class=dialog-buttons/>').appendTo($d);
+		var $d = $('<div class=dialog>').hide().addClass(options.cssClass||'small');
+		$d.append($('<div class=dialog-title>').text(options.title||''));
+		$d.append($('<div class=dialog-content>').append(options.content));
+		var	buttons = options.buttons||{OK:null},
+			$buttons = $('<div class=dialog-buttons>').appendTo($d);
 		var close = function(){
 			dialogs.splice(dialogs.indexOf(d), 1);
 			$d.fadeOut('fast', function(){$d.remove();});
@@ -23,14 +23,18 @@ miaou(function(){
 		var handleKey = function(e){
 			if (e.which===27 || (e.which===13&&Object.keys(buttons).length===1)) close();
 		}
-		$.each(buttons, function(name, func){
-			$buttons.append($('<button>').html(name).click(function(){
-				if (!(func && func()===false)) close();
-			}));
-		});
+		for (var name in buttons) {
+			(function(func){
+				$buttons.append($('<button>').html(name).click(function(){
+					if (!(func && func()===false)) close();
+				}));
+			})(buttons[name]);
+		}
 		$d.appendTo(document.body);
 		var $mask = $('<div class=mask>').appendTo(document.body);
 		$d = $d.add($mask).hide().fadeIn('fast');
+		console.log("$mask:", $mask);
+		console.log("$d:", $d);
 		var d = {
 			close: close, // removes the dialog
 			hide: function(callback){ $d.fadeOut(callback) }, // just hides it so that it can be reopened (be careful not to let them accumulate)

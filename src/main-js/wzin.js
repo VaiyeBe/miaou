@@ -13,10 +13,10 @@ window.wzin = (function(){
 		this.fill = opts.fill||"black";
 		this.zIndex = opts.zIndex||1;
 		this.bindings = [];
-		if (opts.scrollable) this.bind($(opts.scrollable), 'scroll', Wzin.prototype.update);
+		if (opts.scrollable) this.bind($(opts.scrollable), 'scroll', this.update);
 		this.parent = opts.parent || opts.scrollable || document.body;
 		this.chbg = !!opts.changeElementBackground;
-		this.bind($(window), 'resize', Wzin.prototype.update);
+		this.bind($(window), 'resize', this.update);
 		this.update();
 
 		if (opts.observe) {
@@ -58,7 +58,7 @@ window.wzin = (function(){
 			this.savedBg = [this.e1.css('background'), this.e2.css('background')];
 			$().add(e1).add(e2).css({background:this.fill});
 		}
-		var p1 = e1.offset(), h1 = e1.outerHeight(), w1 = e1.outerWidth(),
+		var	p1 = e1.offset(), h1 = e1.outerHeight(), w1 = e1.outerWidth(),
 			p2 = e2.offset(), h2 = e2.outerHeight(), w2 = e2.outerWidth(),
 			H = Math.max(p2.top+h2, p1.top+h1) - p1.top,
 			ps = {
@@ -69,7 +69,7 @@ window.wzin = (function(){
 
 		p1.left -= ps.left; p1.top -= ps.top;
 		p2.left -= ps.left; p2.top -= ps.top;
-		var pl = Math.min(p1.left, p2.left),
+		var	pl = Math.min(p1.left, p2.left),
 			antitwist = Math.abs(p1.left-p2.left)>p2.top-p1.top-h1;
 
 		var path = "M "+p1.left+' '+p1.top;

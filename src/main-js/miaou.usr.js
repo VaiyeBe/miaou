@@ -20,13 +20,19 @@ miaou(function(usr, ed, locals, mod, time, ws){
 	}
 
 	usr.showUserHoverButtons = function(){
+		// if ($("button", this).length) {
+		// 	console.log("already filled");
+		// 	return;
+		// }
 		var user = $(this).dat('user');
 		if (user.name===locals.me.name) return;
 		var decs = $('.decorations', this)
 		.append($('<button>').text('ping').click(function(){
+			console.log("ed.ping clicked");
 			ed.ping(user.name);
 		}))
 		.append($('<button>').text('pm').click(function(){
+			console.log("pm buggon");
 			ws.emit('pm', user.id);
 		}));
 		if (usr.checkAuth('admin')) {

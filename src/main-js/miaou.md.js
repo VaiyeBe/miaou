@@ -64,7 +64,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	}
 
 	md.getMessage = function(mid){
-		var $message = $('#messages .message[mid='+mid+']');
+		var $message = $('#messages .message[mid="'+mid+'"]');
 		if ($message.length) return $message.eq(0).dat('message');
 	}
 
@@ -108,7 +108,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	//  with the new version
 	md.updateNotableMessage = function(m){
 		var	$container = $('#notable-messages'),
-			$repl = $container.children('.message[mid='+m.id+']');
+			$repl = $container.children('.message[mid="'+m.id+'"]');
 		if ($repl.length) md.addSideMessageDiv(m, $container, $repl);
 	}
 
@@ -330,7 +330,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 				if (message.content === oldMessage.content) {
 					// we take the old message content,
 					// so as not to lose the possible replacements (e.g. boxing)
-					$mc = $('#messages .message[mid='+message.id+'] .content');
+					$mc = $('#messages .message[mid="'+message.id+'"] .content');
 				} else if (message.changed !== oldMessage.changed) {
 					message.previous = oldMessage;
 				}
@@ -339,14 +339,14 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 				$previousmessageset = $('#messages .message').eq(insertionIndex).closest('.user-messages');
 				if (
 					$previousmessageset.dat('user').id===user.id && noEndOfBatch
-					&& !$previousmessageset.find('> .message').last().dat('message').next
+					&& !$previousmessageset.children('.message').last().dat('message').next
 				) {
 					$previousmessageset.append($md);
 				} else {
 					$nextmessageset = $('#messages .message').eq(insertionIndex+1).closest('.user-messages');
 					if (
 						$nextmessageset.length && $nextmessageset.dat('user').id===user.id && noEndOfBatch
-						&& !$nextmessageset.find('> .message').first().dat('message').prev
+						&& !$nextmessageset.children('.message').first().dat('message').prev
 					) {
 						$nextmessageset.prepend($md);
 					} else {
@@ -358,7 +358,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			$nextmessageset = $('#messages .user-messages').first();
 			if (
 				$nextmessageset.length && $nextmessageset.dat('user').id===user.id && noEndOfBatch
-				&& !$nextmessageset.find('> .message').first().dat('message').prev
+				&& !$nextmessageset.children('.message').first().dat('message').prev
 			) {
 				$nextmessageset.prepend($md);
 			} else {
@@ -412,7 +412,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 	// replaces one line of a message
 	md.box = function(args){
 		var $from = $('<div>'+miaou.fmt.mdTextToHtml(args.from)+'</div>'),
-			$m = $('.message[mid='+args.mid+']'),
+			$m = $('.message[mid="'+args.mid+'"]'),
 			wab = gui.isAtBottom();
 		$m.find('.content').addClass('wide').html(function(_, h){
 			return h.replace(

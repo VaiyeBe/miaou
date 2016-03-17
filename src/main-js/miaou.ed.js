@@ -151,7 +151,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			index = myMessages.length-1;
 		}
 		if (indexBefore === index) return;
-		if (~index) ed.editMessage($('#messages .message[mid='+myMessages[index].id+']'));
+		if (~index) ed.editMessage($('#messages .message[mid="'+myMessages[index].id+'"]'));
 		else ed.cancelEdit();
 	}
 
@@ -180,7 +180,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			index = messages.length-1;
 		}
 		if (indexBefore === index) return;
-		if (~index) ed.replyToMessage($('#messages .message[mid='+messages[index].id+']'));
+		if (~index) ed.replyToMessage($('#messages .message[mid="'+messages[index].id+'"]'));
 		else ed.cancelReply();
 	}
 
@@ -199,7 +199,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 			replywzin.remove();
 			replywzin = null;
 		}
-		if (!$message && m) $message = $('#messages .message[mid='+m[2]+']');
+		if (!$message && m) $message = $('#messages .message[mid="'+m[2]+'"]');
 		if ($message && $message.length) {
 			var mtop = $message.offset().top, $scroller = gui.$messageScroller;
 			if (mtop<0) {

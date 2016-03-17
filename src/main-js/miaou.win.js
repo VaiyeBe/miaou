@@ -36,7 +36,7 @@ miaou(function(win, chat, gui, md, ws){
 	// with no side, it goes to the middle
 	win.add = function(message, side){
 		closeMWin();
-		$('.mwintab[mid='+message.id+']').remove();
+		$('.mwintab[mid="'+message.id+'"]').remove();
 		if (side) {
 			var	line = (message.content||message.authorname).split("\n")[0],
 				tokens = line.split(/\s+/),

@@ -3,7 +3,7 @@ miaou(function(links, gui, locals, md, skin){
 	var linkwzin;
 	
 	function internalLinkWzin(mid){
-		var $dest = $('#messages .message[mid='+mid+']');
+		var $dest = $('#messages .message[mid="'+mid+'"]');
 		if (!$dest.length) return;
 		linkwzin = wzin($dest, $(this), {zIndex:5, fill:skin.wzincolors.link, scrollable:'#message-scroller'})
 	}

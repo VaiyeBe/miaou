@@ -7,7 +7,10 @@ miaou(function(chat, locals, time, watch, ws){
 	function updateRooms(){
 		$('#rooms-content').hide();
 		$('#rooms-spinner').show();
-		$.get('json/rooms', function(data){
+		window.fetch('json/rooms',{ credentials: 'same-origin' })
+		.then(function(response){
+			return response.json();
+		}).then(function(data){
 			rooms = data.rooms;
 			selectRoomsTab(0);
 			$('#rooms-spinner').hide();
@@ -18,7 +21,7 @@ miaou(function(chat, locals, time, watch, ws){
 	function listRooms(roomlist, title){
 		roomlist = roomlist.filter(function(r){ return r.id!==locals.room.id });
 		var $list = $('<div>').addClass('rooms-list').append(roomlist.map(function(r){
-			var $r = $('<div>').addClass('room'),
+			var	$r = $('<div>').addClass('room'),
 				$rl = $('<div>').addClass('room-left').appendTo($r),
 				$rr = $('<div>').addClass('room-right').appendTo($r),
 				iswatched = watch.watched(r.id);
@@ -27,7 +30,7 @@ miaou(function(chat, locals, time, watch, ws){
 			if (floatImage) html = html.replace(/<br>/,'');
 			var $desc = $('<div>').addClass('rendered room-desc').html(html).appendTo($rl);
 			if (floatImage) {
-				$desc.find('img:eq(0)').css('float','left').css('margin-right','3px')
+				$desc.find('img').first().css('float','left').css('margin-right','3px')
 				.click(function(){ location=r.path });
 			}
 			if (r.id===locals.room.id) {
@@ -98,7 +101,7 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#stripe').addClass('open');
 		$('#non-top').addClass('behind');
 		showroomstimer = setTimeout(function(){
-			$('#rooms').fadeIn("fast");
+			$('#rooms').show().fadeIn("fast");
 		}, 500); // ensure the div is high enough
 	}
 	function hideRoomsPanel(){
@@ -109,16 +112,20 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#stripe').removeClass('open');		
 		$('#non-top').removeClass('behind');
 	}
+	function checkMouseOverRoomsPanel(e){
+		if (!$('#rooms-panel').hasClass('open')) return;
+		if (!$('#stripe, #rooms-panel').contains(e)) hideRoomsPanel();
+	}
 	
 	//~ $('#rooms-spinner.hide();	
 	$('#rooms-content').hide();
-	$('#room-panel').on('mouseenter', function(){
+	$('#room-panel').on('mouseover', function(){
 		openpaneltimer = setTimeout(openRoomsPanel, 180);
 	})
 	.on('mouseleave', function(){
 		clearTimeout(openpaneltimer);		
 	});
-	$('#stripe').on('mouseleave', hideRoomsPanel);
+	$('#stripe').on('mouseout', checkMouseOverRoomsPanel);
 	$('#watch').on('click', function(){
 		if (locals.room.watched) {
 			ws.emit('unwat', locals.room.id);
@@ -185,7 +192,7 @@ miaou(function(chat, locals, time, watch, ws){
 		});
 	});
 
-	$(window).on('keydown', function(e){
+	$(window).keydown(function(e){
 		if (e.which===70 && e.ctrlKey && !$('#room-and-rooms').hasClass('open')) {
 			righttab("search");
 			return false;

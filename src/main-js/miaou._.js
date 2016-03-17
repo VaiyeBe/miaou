@@ -150,12 +150,15 @@ function miaou(f){
 			console.log("not sending error");
 			return;
 		}
-		$.post("/error", {
-			user:miaou.locals.me ? miaou.locals.me.name : "?",
-			page:location.href,
-			message:message,
-			url:url, line:line, col:col,
-			err:err
+		window.fetch("/error", {
+			method: "post",
+			body: JSON.stringify({
+				user:miaou.locals.me ? miaou.locals.me.name : "?",
+				page:location.href,
+				message:message,
+				url:url, line:line, col:col,
+				err:err
+			})
 		});
 	}
 

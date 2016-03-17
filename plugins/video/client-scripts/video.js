@@ -202,7 +202,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 					if ($c.closest('#mwin').length) {
 						// if we're inside a mwin, we'll try to get the content from the
 						//  standard message representation
-						var $normalMC = $('#messages .message[mid='+m.id+'] .content');
+						var $normalMC = $('#messages .message[mid="'+m.id+'"] .content');
 						if ($normalMC.length) {
 							$c.append($normalMC.contents());
 							vd = $normalMC.dat('video');
@@ -227,7 +227,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 				if (!match) return;
 				var vd = $c.dat('video');
 				if ($c.closest('#mwin').length) {
-					var $normalMC = $('#messages .message[mid='+m.id+'] .content');
+					var $normalMC = $('#messages .message[mid="'+m.id+'"] .content');
 					if ($normalMC.length && vd) {
 						// returning to normal message
 						$normalMC.append($c.contents());
@@ -239,7 +239,7 @@ miaou(function(plugins, chat, gui, locals, md, webrtc, ws){
 			});
 			ws.on('video.msg', function(arg){
 				console.log('IN video.msg <-', arg);
-				$('.message[mid='+arg.mid+'] .content').each(function(){
+				$('.message[mid="'+arg.mid+'"] .content').each(function(){
 					var vd = $(this).dat('video');
 					if (vd) vd.receiveMsg(arg.msg);
 				});

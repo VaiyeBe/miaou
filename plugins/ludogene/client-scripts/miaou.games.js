@@ -101,8 +101,8 @@ miaou(function(games, chat, locals, md, ms, notif, plugins, ws){
 				}
 			});
 			ws.on('ludo.move', function(arg){
-				$('.mwintab[mid='+arg.mid+']').addClass('new');
-				$('.message[mid='+arg.mid+']').each(function(){
+				$('.mwintab[mid="'+arg.mid+'"]').addClass('new');
+				$('.message[mid="'+arg.mid+'"]').each(function(){
 					var	$message = $(this),
 						m = $message.dat('message'),
 						game = messageGame(m);

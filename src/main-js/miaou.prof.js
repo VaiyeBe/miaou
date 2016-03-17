@@ -2,20 +2,11 @@
 
 miaou(function(prof, gui, locals, skin){
 
-	var showTimer;
+	var	showTimer,
+		shown = false;
 
 	prof.checkOverProfile = function(e){
-		var elems = $('.profile,.profiled').get();
-		for (var i=0; i<elems.length; i++) {
-			var $o = $(elems[i]), off = $o.offset();
-			if (
-				e.pageX>=off.left && e.pageX<=off.left+$o.outerWidth()
-				&& e.pageY>=off.top && e.pageY<=off.top+$o.outerHeight()
-			) {
-				return;
-			}
-		}
-		prof.hide();
+		if (shown && !$('.profile,.profiled').contains(e)) prof.hide();
 	}
 
 	prof.shownow = function(){
@@ -27,28 +18,34 @@ miaou(function(prof, gui, locals, skin){
 			uh = $user.outerHeight(), uw = $user.width(),
 			wh = $(window).height(),
 			mintop = 0, maxbot = wh,
-			$ms = gui.$messageScroller;
+			$ms = gui.$messageScroller,
+			$p = $('<div>').addClass('profile').text('loading profile...'),
+			css = {};
 		if ($ms.length) {
 			mintop = $ms.offset().top;
 			maxbot = wh-($ms.offset().top+$ms.height());
 		}
-		var $p = $('<div>').addClass('profile').text('loading profile...'), css={};
 		if (uo.top>wh/2) {
-			css.bottom = Math.max(wh-uo.top-uh+$(window).scrollTop(), maxbot);
+			css.bottom = Math.max(wh-uo.top-uh, maxbot);
 		} else {
 			css.top = Math.max(uo.top, mintop);
-
 		}
 		css.left = uo.left + uw;
-		$p.load('publicProfile?user='+user.id+'&room='+locals.room.id, function(){
+		window.fetch('publicProfile?user='+user.id+'&room='+locals.room.id)
+		.then(function(response){
+			return response.text();
+		})
+		.then(function(html){
+			$p.html(html);
 			$p.find('.avatar').css('color', skin.stringToColour(user.name));
-			if ($p.offset().top-$(window).scrollTop()+$p.height()>wh) {
+			if ($p.offset().top+$p.height()>wh) {
 				$p.css('bottom', '0').css('top', 'auto');
 			}
 		});
 		$p.css(css).appendTo('body');
 		$user.addClass('profiled');
 		$(window).on('mousemove', prof.checkOverProfile);
+		shown = true;
 	};
 
 	// used in chat.jade, chat.mob.jade and auths.jade
@@ -62,6 +59,7 @@ miaou(function(prof, gui, locals, skin){
 		$('.profile').remove();
 		$('.profiled').removeClass('profiled');
 		$(window).off('mousemove', prof.checkOverProfile);
+		shown = false;
 	};
 
 	prof.displayed = function(){
