@@ -87,8 +87,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		.on('click', '.reply', function(e){
 			var	$m = $(this).closest('.message');
 			notif.userAct($m.dat('message').id);
-			console.log("clicked:", this);
-			console.log("clicked data", $(this).dat("message"));
 			md.focusMessage(+$(this).attr('to'));
 			e.stopPropagation();
 		})
@@ -174,7 +172,6 @@ miaou(function(gui, chat, ed, hist, locals, md, mh, ms, notif, horn, prof, usr, 
 		}
 
 		$('#notable-messages, #search-results').on('click', '.message', function(e){
-			console.log("click notable", this);
 			var $this = $(this);
 			$this.closest('#notable-messages, #search-results').find('.message.selected').removeClass('selected');
 			md.focusMessage(+$this.addClass('selected').attr('mid'));

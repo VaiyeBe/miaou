@@ -74,12 +74,10 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 		}
 		if (locals.room.watched) return;
 		if (locals.userPrefs.otowat==="on_visit") {
-			console.log("autowatching visited room");
 			watch.addLocalRoom();
 		} else if (locals.userPrefs.otowat==="on_post") {
 			chat.on('sending_message', function(){
 				if (!locals.room.watched) {
-					console.log("autowatching room on post");
 					watch.addLocalRoom();
 				}
 			});
@@ -140,13 +138,7 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 
 	var requiredrid;
 	$('#watches').on('mouseenter', '.watch', function(){
-		console.log("entering .watch in #watches");
-		// if ($(this).hasClass("open")) {
-		// 	console.log("already open");
-		// 	return;
-		// }
 		$('.watch').removeClass('open').find('.watch-panel').remove();
-		console.log("nb watch panels:", $('.watch-panel').length);
 		var	$w = $(this), w = $w.dat('watch'), entertime = Date.now(),
 			off = $w.offset(), ww = $(window).width(),
 			nbunseen = +$w.find('.count').text()||0,
@@ -156,7 +148,6 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			if (requiredrid!==w.id) {
 				return;
 			}
-			console.log("positionning watch drawer ==================");
 			var	dr = Math.max(Math.min(200, ww-off.left-$w.width()-30), 0),
 				dl = -500+$w.width()+dr;
 			var $panel = $('<div>').addClass('watch-panel').css({
@@ -194,12 +185,8 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 			setTimeout(display, 250 + entertime - Date.now(), dat);
 		});
 	}).on('mouseout', '.watch', function(e){
-		console.log("IS WATCH:", $(this).hasClass("watch"));
-		console.log("leaving .watch", this, "target:", e.target);
 		var $watchPanel = $(this).find('.watch-panel');
-		console.log("watchpanel:", $watchPanel);
 		if ($watchPanel.contains(e)) {
-			console.log("over watch panel");
 			return;
 		}
 		requiredrid = 0;
@@ -209,7 +196,6 @@ miaou(function(watch, chat, gui, locals, md, notif, ws){
 	}).on('mouseout', '.watch-panel', function(e){
 		var $watch = $(this).closest('.watch');
 		if ($watch.contains(e)) {
-			console.log("over watch");
 			return;
 		}
 		requiredrid = 0;
