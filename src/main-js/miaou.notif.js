@@ -60,9 +60,15 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	}
 
 	notif.updatePingsList = function(){
+		console.log("notif.updatePingsList", notifications);
 		if (!vis()) notif.updateTab(!!notifications.length, nbUnseenMessages);
 		if (!notifications.length) {
-			if (notifMessage) notifMessage.$md.slideUp($.fn.remove);
+			if (notifMessage) {
+				var $md = notifMessage.$md;
+				$md.slideUp(function(){
+					$md.remove();
+				});
+			}
 			notifMessage = null;
 			return;
 		}
@@ -96,16 +102,18 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 				var t = "You've been pinged in room";
 				if (nbotherrooms>1) t += 's';
 				var $otherrooms = $('<div>').append($('<span>').text(t)).appendTo($c);
-				$.each(otherRooms, function(r, rname){
-					var $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
-					$('<button>').addClass('openroom').text(rname).click(function(){
-						ws.emit('watch_raz');
-						setTimeout(function(){	location = r; }, 250); // timeout so that the raz is sent
-					}).appendTo($brs);
-					$('<button>').addClass('clearpings').text('clear').click(function(){
-						notif.clearPings(r);
-					}).appendTo($brs);
-				});
+				for (var rname in otherRooms) {
+					(function(rname, r){
+						var $brs = $('<div>').addClass('pingroom').appendTo($otherrooms);
+						$('<button>').addClass('openroom').text(rname).click(function(){
+							ws.emit('watch_raz');
+							setTimeout(function(){	location = r; }, 250); // timeout so that the raz is sent
+						}).appendTo($brs);
+						$('<button>').addClass('clearpings').text('clear').click(function(){
+							notif.clearPings(r);
+						}).appendTo($brs);
+					})(otherRooms[rname], rname);
+				}
 				watch.setPings(otherRoomIds);
 			}
 		});
@@ -134,6 +142,7 @@ miaou(function(notif, chat, gui, horn, locals, md, watch, ws){
 	// called by the server or (most often) in case of any action on a message
 	//  (so this is very frequently called on non pings)
 	notif.removePing = function(mid, forwardToServer, flash){
+		console.log("notif.removePing", arguments);
 		if (!mid) return;
 		// we assume here there's at most one notification to a given message
 		for (var i=0; i<notifications.length; i++) {

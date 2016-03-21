@@ -254,7 +254,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 		var	$usermessages = $('<div>').addClass('user-messages').dat('user', user),
 			$user = $('<div>').addClass('user').appendTo($usermessages),
 			avsrc = usr.avatarsrc(user);
-		$user.css('color', skin.stringToColour(user.name)).append($('<span/>').text(user.name));
+		$user.css('color', skin.stringToColour(user.name)).append($('<span>').text(user.name));
 		if (avsrc) {
 			$('<div>').addClass('avatar-wrapper').prependTo($user).append(
 				$('<img>').attr('src', avsrc).addClass('avatar').imgOn('error', selfHide)
@@ -373,7 +373,7 @@ miaou(function(md, chat, gui, hist, locals, skin, time, usr){
 			$('<div>&#xe826;</div>').addClass('decoration snap').appendTo($decorations)
 			.attr('title', "Flake : only sent to people currently in the room, and will disappear if you refresh the page.");
 		}
-		if (votesHtml.length) $md.append($('<div/>').addClass('message-votes').html(votesHtml));
+		if (votesHtml.length) $md.append($('<div>').addClass('message-votes').html(votesHtml));
 		if (!$mc) $mc = $('<div>').addClass('content');
 		$mc.appendTo($md);
 		md.render($mc, message, oldMessage);

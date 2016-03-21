@@ -17,7 +17,7 @@ miaou(function(md, chat, gui, hist, links, locals, ms, notif, time, usr, ws, wz)
 			if (o.voter===locals.me.id) m.vote = o.diff>0 ? o.level : null;
 			if ($md.closest('#messages').length) {
 				$md.find('.message-votes').remove();
-				$md.append($('<div/>').addClass('message-votes').html(md.votesAbstract(m)));
+				$md.append($('<div>').addClass('message-votes').html(md.votesAbstract(m)));
 				md.hideMessageHoverInfos();
 			} else {
 				$md.find('.nminfo').html(

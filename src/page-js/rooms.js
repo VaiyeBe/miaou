@@ -40,7 +40,7 @@ miaou(function(locals){
 				var $description = $('<div>').addClass('room-description rendered').html(html)
 				.appendTo($underDescription);
 				if (floatImage) {
-				 	var bgsrc = $description.find('img:eq(0)').remove().attr('src');
+				 	var bgsrc = $description.find('img').first().remove().attr('src');
 					$underDescription.css('background-image', 'url("'+bgsrc+'")');
 				 }
 				var w = roomWatch(r.id);
@@ -81,7 +81,7 @@ miaou(function(locals){
 				if (floatImage) html = html.replace(/<br>/,'');
 				var $description = $('<td>').addClass('rendered').html(html);
 				if (floatImage) {
-					$description.find('img:eq(0)').css('float','left').css('margin-right','3px')
+					$description.find('img').first().css('float','left').css('margin-right','3px')
 					.click(function(){ location=r.path });
 				}
 				var w = roomWatch(r.id);
@@ -168,7 +168,8 @@ miaou(function(locals){
 	});
 
 	function applyLangs(trans){
-		$.each(langs, function(key, lang){
+		for (var key in langs) {
+			var lang = langs[key];
 			var $lang = $(document.getElementById(key));
 			$('.room.'+key)[lang.on ? 'show' : 'hide'](trans*800);
 			if (lang.on) {
@@ -178,17 +179,21 @@ miaou(function(locals){
 				$lang.removeClass('on').addClass('off')
 				.attr('title', 'Rooms in '+lang.name+' are hidden. Click to display them.');				
 			}
-		});
+		}
 	}
-	$.each(langs, function(key, lang){	
-		var $lang = $(document.getElementById(key));
-		lang.on = localStorage[key] !== 'off';
-		$lang.click(function(){
-			lang.on = !lang.on;
-			localStorage[key] = lang.on ? 'on' : 'off';
-			applyLangs(true);
-		});
-	});
+	for (var key in langs) {
+		(function(lang){
+			console.log("buing", lang);
+			var $lang = $(document.getElementById(key));
+			lang.on = localStorage[key] !== 'off';
+			$lang.click(function(){
+				lang.on = !lang.on;
+				localStorage[key] = lang.on ? 'on' : 'off';
+				console.log("lang:", lang);
+				applyLangs(true);
+			});
+		})(langs[key]);
+	}
 	applyLangs();
 
 });

@@ -177,6 +177,7 @@ function startServer(){
 		res.set("X-Frame-Options", "deny");
 		res.set("Content-Security-Policy", "script-src 'self'");
 		res.set("Cache-Control", "no-transform");
+		console.log(app._router.stack.findIndex((layer)=>layer.handle===cookieParser));
 		next();
 	});
 

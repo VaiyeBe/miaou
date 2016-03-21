@@ -113,13 +113,14 @@ miaou(function(chat, locals, time, watch, ws){
 		$('#non-top').removeClass('behind');
 	}
 	function checkMouseOverRoomsPanel(e){
-		if (!$('#rooms-panel').hasClass('open')) return;
+		//if (!$('#rooms-panel').hasClass('open')) return;
 		if (!$('#stripe, #rooms-panel').contains(e)) hideRoomsPanel();
 	}
 	
 	//~ $('#rooms-spinner.hide();	
 	$('#rooms-content').hide();
 	$('#room-panel').on('mouseover', function(){
+		clearTimeout(openpaneltimer);
 		openpaneltimer = setTimeout(openRoomsPanel, 180);
 	})
 	.on('mouseleave', function(){

@@ -145,9 +145,9 @@ miaou(function(hist, gui, md, time, ws){
 				).appendTo($hist);
 				lastMonth = month;
 			}
-			var $bar = $('<div/>').addClass('bar').css('width', Math.log(n)*80/logmaxn+'%');
+			var $bar = $('<div>').addClass('bar').css('width', Math.log(n)*80/logmaxn+'%');
 			if (sm) $bar.addClass('hit');
-			var $day = $('<div/>').addClass('day').append($bar).attr('d', d).attr('n', n).appendTo($month);
+			var $day = $('<div>').addClass('day').append($bar).attr('d', d).attr('n', n).appendTo($month);
 			if (m) $day.attr('m', m);
 			if (sm) $day.attr('sm', sm).attr('sn', sn);
 		}

@@ -93,7 +93,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		var accmd = getaccmd();
 		if (accmd) {
 			savedValue = input.value;
-			$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+			$autocompleter = $('<div id=autocompleter>').prependTo('#input-panel');
 			Object.keys(chat.commands).filter(function(n){
 				return !n.indexOf(accmd)
 			}).sort().forEach(function(name){
@@ -107,9 +107,11 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 	}
 
 	function tabautocomplete(){
+		console.log($autocompleter.find('.selected'),  $autocompleter.find('span'));
 		var	index = ($autocompleter.find('.selected').index()+1) % $autocompleter.find('span').length,
 			name = $autocompleter.find('span').removeClass('selected').eq(index).addClass('selected').text(),
 			accmd = getaccmd();
+		console.log("tabautocomplete index=", index, "name:", name);
 		if (accmd) {
 			input.selectionStart = input.selectionEnd - accmd.length;
 			$input.replaceSelection(name);
@@ -218,6 +220,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		$input = $('#input');
 		input = $input[0];
 		$input.on('keydown', function(e){
+			console.log("key:", e.which);
 			notif.userAct();
 			if (miaou.dialog.has()) return false;
 			if (e.ctrlKey && !e.shiftKey) {
@@ -440,7 +443,7 @@ miaou(function(ed, chat, gui, locals, md, ms, notif, skin, usr, ws){
 		}
 		if (!names.length) return;
 		if ($autocompleter) $autocompleter.remove();
-		$autocompleter = $('<div id=autocompleter/>').prependTo('#input-panel');
+		$autocompleter = $('<div id=autocompleter>').prependTo('#input-panel');
 		names.forEach(function(name){
 			var $span = $('<span>').text(name).appendTo($autocompleter).click(function(){
 				ed.ping(name);

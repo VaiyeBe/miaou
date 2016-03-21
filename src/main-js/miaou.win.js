@@ -8,7 +8,7 @@ miaou(function(win, chat, gui, md, ws){
 	var sides = ['left', 'bottom', 'right'];
 
 	sides.forEach(function(side){
-		$('<div/>').addClass('mwincontainer').addClass(side).appendTo(document.body);
+		$('<div>').addClass('mwincontainer').addClass(side).appendTo(document.body);
 	});
 	chat.on('incoming_message', function(message){
 		$('.mwintab').filter(function(){ return $(this).attr('mid')==message.id }).addClass('new');
@@ -43,15 +43,15 @@ miaou(function(win, chat, gui, md, ws){
 				title = tokens[0], i=1;
 			while (i<tokens.length && title.length+tokens[i].length<20) title += ' '+tokens[i++];
 			$('.mwincontainer.'+side).append(
-				$('<div/>').addClass('mwintab').html(miaou.fmt.mdTextToHtml(title))
+				$('<div>').addClass('mwintab').html(miaou.fmt.mdTextToHtml(title))
 				.attr('mid', message.id).click(function(){ win.add(message) })
 			)
 		} else {
-			var $mc = $('<div/>').addClass('content');
-			var $mwin = $('<div id=mwin/>').attr('mid', message.id).addClass('message').append($mc);
-			$mwin.append($('<div class=remover/>').text('X').click(closeMWin)).appendTo(document.body);
+			var $mc = $('<div>').addClass('content');
+			var $mwin = $('<div id=mwin>').attr('mid', message.id).addClass('message').append($mc);
+			$mwin.append($('<div class=remover>').text('X').click(closeMWin)).appendTo(document.body);
 			sides.forEach(function(side){
-				$mwin.append($('<div/>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
+				$mwin.append($('<div>').addClass('sider').addClass(side).click(function(){ win.add(message, side) }));
 			});
 			$mc.html('loading...'); // fixme : this isn't replaced when the message isn't found on the server (hard deleted)
 			ws.emit('get_message', message.id);

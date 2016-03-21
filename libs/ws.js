@@ -236,10 +236,12 @@ function handleUserInRoom(socket, completeUser){
 	})
 	.on('rm_ping', function(mid){
 		// remove the ping(s) related to that message and propagate to other sockets of same user
+		console.log("rm_ping", mid);
 		db.on([mid, shoe.publicUser.id])
 		.spread(db.deletePing)
 		.then(function(){
 			shoe.emitToAllSocketsOfUser('rm_ping', mid, true);
+			console.log("emitted rm_ping", mid);
 		}).finally(db.off);
 	})
 	.on('disconnect', function(){

@@ -132,7 +132,10 @@ miaou(function(ws, chat, ed, gui, hist, locals, md, mod, notif, time, usr, watch
 		.on('autocompleteping', ed.proposepings)
 		.on('hist', hist.showHist)
 		.on('pings', notif.pings)
-		.on('rm_ping', notif.removePing)
+		.on('rm_ping', function(mid){
+			console.log("miaou.ws rm_ping", arguments);
+			notif.removePing(mid);
+		})
 		.on('disconnect', ws.notif.onOff)
 		.on('enter', usr.showEntry)
 		.on('leave', usr.showLeave)
