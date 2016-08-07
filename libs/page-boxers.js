@@ -1,5 +1,6 @@
 const	request = require('request'),
 	$$ = require('cheerio'),
+	RE2 = require("re2"),
 	bench = require('./bench.js'),
 	cache = require('bounded-cache')(300),
 	Deque = require("double-ended-queue"),
@@ -11,6 +12,7 @@ let	currentTask;
 
 exports.register = function(boxer){
 	boxer.TTL = boxer.TTL || TTL;
+	boxer.re2 = new RE2(boxer.pattern);
 	boxers.push(boxer);
 }
 
@@ -58,7 +60,8 @@ exports.onSendMessage = function(shoe, m, send){
 	var bo = bench.start("Boxer - analyze");
 	m.content.split('\n').forEach(function(line){
 		for (var i=0; i<boxers.length; i++) {
-			if (boxers[i].pattern.test(line)) {
+			// if (boxers[i].pattern.test(line)) {
+			if (boxers[i].re2.test(line)) {
 				tasks.push({
 					line:line.trim(),
 					mid:m.id,
