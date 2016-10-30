@@ -1,87 +1,69 @@
-doctype 5
+doctype html
 html
 	head
 		title Miaou - Rooms
 		link(rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/main.css')
-		script(src="static/jquery-2.0.3.min.js")
-		script(src="static/miaou.format.js")
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=2')
+		script(src="static/jquery-2.1.3.min.js")
+		script#locals(type="Application/JSON") !{inlineJSON(vars)}
+		script(src="static/miaou.min.js?v=9")
+		script(src="static/rooms.min.js?v=2")
 		style.
-			#logo {
-				margin-top: 6px;
+			.CL, .CR {
+				background: $bg-color;
+				width: 50%;
+				padding: 2px;
+				display: table-cell;
+				vertical-align: top;
 			}
-			p.links a {
-				margin-right: 5px;
+			.CC {
+				padding: 2px;
 			}
-			p.links a+a {
-				margin-left: 5px;
-			}
-	body
+	body.home.desktop
 		a(href="https://github.com/Canop/miaou",target="github")
-			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
-
-		div.MP
-			div#logo
-				img(src="static/Miaou-300-f.png")
-			p.links
-				a(href="room") Create a room
-				| -
-				a(href="help#About",target=help) Help
-				| -
-				a(id="logout",href="#") Log Out
-			h2 Notifications
-			if pings.length==1
-				p
-					| You've been pinged in room&nbsp;
-					a(href=pings[0].room)= pings[0].roomname
-			else if pings.length
-				p You've been pinged in rooms
-				ul 
-					each ping in pings
-						li
-							a(href=ping.room)= ping.roomname
-			else
-				p None
-			div.CL
-				h2 Public Rooms
-				table.list
-					each room, i in rooms.public
-						tr
-							th: a(href=room.path) #{room.name}
-							td.rendered #{room.description}
-							if room.auth
-								td.role= room.auth
-			div.CR
-				h2(title="Those are the private room whose access has been granted to you") Accessible Private Rooms
-				table.list
-					each room, i in rooms.private
-						tr
-							th.private: a(href=room.path) #{room.name}
-							td.rendered #{room.description}
-							if room.auth
-								td.role= room.auth
-		script.
-			var loginRoom = localStorage['login.room'];
-			if (loginRoom) {
-				delete localStorage['login.room'];
-				location = loginRoom;
-			}
-			delete localStorage['room'];
-			$('.rendered').html(function(_,h){ return miaou.mdToHtml(h) });
-			$('.role').attr('title', function() {
-				switch(this.innerHTML.trim()) {
-				case 'read':
-					return 'You can only read in this room';
-				case 'read':
-					return 'You can read and write in this room';
-				case 'admin':
-					return "You're an administrator of this room : you can change its name and description, give or revoke writing rights, and give admin rights.";
-				case 'own':
-					return "You're an owner of this room : you can change its name and description, give or revoke writing and admin rights, and give owner rights.";
-				}
-			});
-			$('#logout').click(function(){
-				delete localStorage['successfulLoginLastTime'];
-				setTimeout(function(){ location = 'logout' }, 100);
-			});
-
+			img(style="position:absolute; top:0; right:0; border:0;",src="static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
+		section#home-top
+			.MP
+				#langfilter
+					each lang, key in vars.langs
+						div.lang.off(id=key)
+							img(src="static/langs/"+key+".png")
+				object.Miaou-logo#Home-logo(type="image/svg+xml",data="static/Miaou.svg")
+				p.links
+					| You're connected as
+					a.username(href="prefs",title="edit profile")= user.name
+					| -
+					a(id="logout",href="#") Log Out
+					| -
+					a(href="room") Create a room
+					| -
+					a(href="help#About",target=help) Help
+		section
+			.MP#home-blurb
+				#home-notifs
+					h2
+						form(method="post")
+							| Notifications
+							if pings.length > 0
+								input(type="hidden", name="secret", value=secret)
+								input(type="hidden",name="clear_pings",value="true")
+								input(type="submit",value="Clear")
+						if pings.length==1
+							p
+								| You've been pinged in room&nbsp;
+								a(href=pings[0].room)= pings[0].roomname
+						else if pings.length
+							p You've been pinged in rooms
+							ul 
+								each ping in pings
+									li
+										a(href=ping.room)= ping.roomname
+						else
+							p None
+				#home-search.desktop
+					input#room-search-input(placeholder="filter rooms")
+					button.small#room-search-reset X
+		.rooms-tabs.home-tabs.MP
+			
+		section#home-main.hastabs
+			#rooms-page

@@ -1,45 +1,26 @@
-doctype 5
+doctype html
 html
 	head
 		title Miaou
-		link(rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href='static/main.css')
-		script(src="static/jquery-2.0.3.min.js")
+		meta(name="viewport", content="initial-scale=1, maximum-scale=1")
+		link(rel="icon", type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css')
+		script(src="static/jquery-2.1.3.min.js")
+		script#locals(type="Application/JSON") !{inlineJSON(vars)}
+		script(src="static/miaou.min.js")
+		script(src="static/login.min.js?v=2")
+		style.
+			#buttons {
+				line-height: 40px;
+			}
 	body.logo
 		div.dialog.intro
-			div.dialog_title Authentication
-			div.dialog_content
-				p Miaou is a multi-room persistent and feature-rich chat server. It's free to use and anybody can create public or private rooms.
-				p.toRemoveWhenLogin To prevent impersonation, users must be logged. Sign In With :
-			div.dialog_buttons#buttons
+			div.dialog-title Authentication
+			div.dialog-content
+				p Miaou is a multi-room persistent chat server. It's free to use and anybody can create public or private rooms.
+				p.toRemoveWhenLogin To prevent impersonation, users must be logged in. Sign In With :
+			div.dialog-buttons#buttons
 
 		a(href="https://github.com/Canop/miaou",target="github")
-			img(style="position:absolute; top:0; right:0; border:0;",src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png",alt="Fork me on GitHub")
+			img(style="position:absolute; top:0; right:0; border:0;",src="static/gh_ribbon_right_gray.png",alt="Fork me on GitHub")
 		
-		script.
-			var m = location.toString().match(/room=(\d+)/), strategies = !{JSON.stringify(oauth2Strategies)};
-			if (m) {
-				localStorage['login.room'] = m[1];
-			} else {
-				delete localStorage['login.room'];
-			}
-			if (localStorage['successfulLoginLastTime'] && localStorage['lastUsedStrategy'] && strategies[localStorage['lastUsedStrategy']]) {
-				delete localStorage['successfulLoginLastTime'];
-				$('#buttons').html('<i>Authentication in progress...</i>');
-				$('.toRemoveWhenLogin').remove();
-				setTimeout(function(){ location = strategies[localStorage['lastUsedStrategy']].url }, 100);
-			} else {
-				var names = {
-					google: "<span class=icon>&#xe818;</span> Google",
-					stackexchange: "<span class=icon>&#xe816;</span> StackExchange",
-					github: "<span class=icon>&#xe817;</span> GitHub"
-				};
-				for (var key in strategies) {
-					(function(key, strategy){
-						$('<button>').html(names[key]||key).click(function(){
-							localStorage['lastUsedStrategy'] = key;
-							location = strategies[key].url;
-						}).appendTo('#buttons');
-					})(key, strategies[key]);
-				}
-			}
