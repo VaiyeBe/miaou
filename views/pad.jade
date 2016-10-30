@@ -1,0 +1,107 @@
+doctype html
+html
+	head
+		title Miaou - Pad
+		link(id="favicon",rel="icon",type="image/png",href="static/M-32.png")
+		link(rel='stylesheet', href='static/themes/'+theme+'/miaou.css?v=6')
+		script(src="socket.io/socket.io.js")
+		script(src="static/jquery-2.1.3.min.js")
+		script#locals(type="Application/JSON") !{inlineJSON(vars)}
+		script(src="static/miaou.min.js?v=10")
+		script(src="static/pad.min.js?v=3")
+	body.pad.desktop
+		#non-top
+			#left
+				#users
+			#center
+				#vert-center
+					#message-scroller
+						div#messages
+					#notifications
+					#input-panel
+						textarea#input(lang=vars.room.lang)
+						button#send Send
+						button.small#showPreview Preview
+						button.small#cancelEdit(style="display:none") Cancel
+						button.small#uploadOpen Upload
+					#upload-panel
+						#upload-controls
+							| Select an image to send to imgur
+							br
+							br
+							input(type="file",id="file")
+							button#uploadSend Send
+							button#cancelUpload Cancel
+						#upload-wait(style="display:none")
+							p Uploading image to imgur...
+							img(src="static/ajax-loader-bar.gif")
+					#preview-panel
+						#preview.rendered
+						button.small#shortcuts Shortcuts
+						button.small#hidePreview Hide
+				#hist
+			#right
+				#room-area
+					#room-controls
+						#room-watch.room-control watch room
+						#room-unwatch.room-control unwatch room
+						#room-edit.room-control edit room
+						#auths.room-control authorizations
+					#room-description.rendered
+				.tabs
+					span.tab.selected(page="notablemessagespage") Notable Messages
+					span.tab(page="search") Search
+				.page.selected#notablemessagespage
+					#notable-messages
+				.page#search
+					.search-input-line
+						input#search-input(autocomplete="off")
+						span#search-options-open.icon-cog
+					#search-options.open
+						.search-input-line
+							input(type="checkbox")#search-starred
+							label(for="search-starred") starred
+							.search-options-details
+								input(type="checkbox")#search-starred-by-me
+								label(for="search-starred-by-me") by me
+						.search-input-line
+							input(type="checkbox")#search-written
+							label(for="search-written") written
+							.search-options-details
+								input(type="radio",name="search-written-by",checked="checked")#search-written-by-me
+								label(for="search-written-by-me") by me
+								input(type="radio",name="search-written-by")#search-written-by
+								label(for="search-written-by") by @
+								input.username(type="text")#search-author
+					#search-load-bar.load-bar
+					#search-results
+						i
+							p Type anything to search it (common English words are ignored)
+							p Hit <code>esc</code> to clear
+		#stripe
+			#stripe-top
+				#M-menu
+					a#Miaou-logo-wrapper(href="rooms")
+						object.Miaou-logo#Miaou-logo(type="image/svg+xml",data="static/Miaou.svg")
+					#menu-content
+						p You're connected as <span id=me></span>
+						a.menu-item#menu-logout Log Out
+						a.menu-item#menu-settings Settings
+						a.menu-item#menu-help(href="help") Help
+				#room-panel-wrapper
+					#room-panel-bg
+					#room-panel
+						#room-title
+							a#roomname(href=vars.room.path)
+				#watches
+			#rooms-panel.closed
+				#rooms
+					#rooms-content
+						.rooms-tabs
+							span.aftertabs
+								button.small#create-room Create A Room
+								#room-search-div
+									input#room-search-input(placeholder="filter rooms")
+									button.small#room-search-reset X
+						#rooms-page
+	

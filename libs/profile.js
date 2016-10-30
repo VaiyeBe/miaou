@@ -1,63 +1,48 @@
-var path = require('path.js'),
+const	auths = require('./auths.js'),
+	path = require('path'),
 	naming = require('./naming.js'),
-	server = require('./server.js'),
+	prefs = require('./prefs.js'),
+	server = require('./server.js');
+
+var	db,
 	plugins;
 
-exports.configure = function(conf){
-	plugins = (conf.plugins||[]).map(function(n){ return require(path.resolve(__dirname, '..', n)) })
+exports.configure = function(miaou){
+	db = miaou.db;
+	let conf = miaou.config;
+	plugins = (conf.plugins||[]).map(n => require(path.resolve(__dirname, '..', n)));
 	return this;
 }
 
-// Checks that the profile is complete enough to be used for the chat
-//  (a valid name is needed). If not, the user is redirected to the profile
-//  page until he makes his profile complete.
-exports.ensureComplete = function(req, res, next) {
-	if (naming.isValidUsername(req.user.name)) return next();
-	res.redirect(server.url('/profile'));
+// Problem: the exact same code is duplicated here and in src/main-js/miaou.usr.js
+var avatarsrc = exports.avatarsrc = function(source, key){
+	if (!key) return;
+	if (/^https?:\/\//.test(key)) return key; // this is hacky...
+	if (source==="gravatar") { // because avatars.io redirects https to http, I try to avoid it
+		return "https://www.gravatar.com/avatar/"+key+"?s=200";
+	}
+	return 'https://avatars.io/'+source+'/'+key+'?size=large';
 }
 
-// handles get and post '/profile' requests
-exports.appAllProfile = function(req, res, db){
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
-		return { name:p.name, ep:p.externalProfile, fields:p.externalProfile.creation.fields }
-	});
+// Checks that the profile is complete enough to be used for the chat
+//  (a valid name is needed). If not, the user is redirected to the
+//  page where he can set his name.
+exports.ensureComplete = function(req, res, next){
+	if (naming.isValidUsername(req.user.name)) return next();
+	res.redirect(server.url('/username'));
+}
+
+// handles get and post of the simple profile creation/edition ('/username' requests)
+exports.appAllUsername = function(req, res){
 	var error = '';
-	db.on(externalProfileInfos)
-	.map(function(epi){
-		return this.getPlayerPluginInfo(epi.name, req.user.id);
-	}).then(function(ppis){ // todo use map(ppi,i) to avoid iteration
-		ppis.forEach(function(ppi,i){
-			if (ppi) externalProfileInfos[i].ppi = ppi.info;
-		});
-		return externalProfileInfos;
-	}).map(function(epi){
-		if (epi.ppi) epi.html = epi.ep.render(epi.ppi);
+	db.on()
+	.then(function(){
 		if (req.method==='POST') {
-			if (epi.html) {
-				if (req.param('remove_'+epi.name)) {
-					epi.ppi = null;
-					return this.deletePlayerPluginInfo(epi.name, req.user.id);
-				}
-			} else {
-				var vals = {}, allFilled = true;
-				epi.fields.forEach(function(f){
-					if (!(vals[f.name] = req.param(f.name))) allFilled = false;
-				});
-				if (allFilled) return epi.ep.creation.create(req.user, epi.ppi||{}, vals);
+			var name = req.body.name;
+			if (naming.isUsernameForbidden(name)) {
+				error = "Sorry, that username is reserved.";
+				return;
 			}
-		}
-	}).map(function(ppi, i){
-		var epi = externalProfileInfos[i];
-		if (typeof ppi === 'object') { // in case of creation success
-			epi.ppi = ppi;
-			this.storePlayerPluginInfo(epi.name, req.user.id, ppi);
-			epi.html = epi.ep.render(ppi);
-		} else if (ppi===1) { // deletion
-			epi.html = null;
-		}
-	}).then(function(){
-		if (req.method==='POST') {
-			var name = req.param('name');
 			if (name!=req.user.name && naming.isValidUsername(name)) {
 				req.user.name = name;
 				return this.updateUser(req.user);
@@ -67,29 +52,31 @@ exports.appAllProfile = function(req, res, db){
 		console.log('Err...', err);
 		error = err;
 	}).then(function(){
-		externalProfileInfos.forEach(function(epi){
-			if (epi.ep.creation.describe) epi.creationDescription = epi.ep.creation.describe(req.user);
-		});
-		var hasValidName = naming.isValidUsername(req.user.name);
-		res.render('profile.jade', {
-			user: req.user,
-			externalProfileInfos: externalProfileInfos,
-			valid : hasValidName,
+		return prefs.get.call(this, req.user.id)
+	}).then(function(userPrefs){
+		var hasValidName = naming.isValidUsername(req.user.name),
+			theme = prefs.theme(userPrefs, req.query.theme);
+		res.render('username.jade', {
+			vars: {valid : hasValidName},
 			suggestedName:  hasValidName ? req.user.name : naming.suggestUsername(req.user.oauthdisplayname || ''),
-			error: error
+			error,
+			theme
 		});
 	}).catch(function(err){
+		console.log('err in appAllUsername');
 		server.renderErr(res, err);
 	}).finally(db.off)
 }
 
 // handles GET on '/publicProfile'
-exports.appGetPublicProfile = function(req, res, db){
+// used to fill the popup seen when hovering a user name
+exports.appGetPublicProfile = function(req, res){
 	res.setHeader("Cache-Control", "public, max-age=120"); // 2 minutes
-	var userId = +req.param('user'), roomId = +req.param('room');
-	var externalProfileInfos = plugins.filter(function(p){ return p.externalProfile}).map(function(p){
+	var	userId = +req.query.user,
+		roomId = +req.query.room;
+	var externalProfileInfos = plugins.filter(p => p.externalProfile).map(function(p){
 		return { name:p.name, ep:p.externalProfile }
-	});			
+	});
 	if (!userId || !roomId) return server.renderErr(res, 'room and user must be provided');
 	var user, auth;
 	db.on(userId)
@@ -98,7 +85,7 @@ exports.appGetPublicProfile = function(req, res, db){
 		user = u;
 		return this.fetchRoomAndUserAuth(roomId, userId);
 	}).then(function(r){
-		switch(r.auth) {
+		switch (r.auth) {
 		case 'write': auth='writer'; break;
 		case 'admin': auth='admin'; break;
 		case 'own'  : auth='owner'; break;
@@ -110,23 +97,49 @@ exports.appGetPublicProfile = function(req, res, db){
 	}).map(function(ppi, i){
 		if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
 	}).then(function(){
-		externalProfileInfos = externalProfileInfos.filter(function(epi){ return epi.html });
-		res.render('publicProfile.jade', {user:user, auth:auth, externalProfileInfos:externalProfileInfos});
+		return this.getUserInfo(userId);
+	}).then(function(info){
+		externalProfileInfos = externalProfileInfos.filter(epi => epi.html);
+		res.render('publicProfile.jade', {
+			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
+			isServerAdmin:auths.isServerAdmin(user),
+			auth:auth, externalProfileInfos:externalProfileInfos
+		});
 	}).catch(function(err){
 		server.renderErr(res, err)
 	}).finally(db.off);
 }
 
-exports.appGetUser = function(req, res, db){
-	db.on(+req.params[0])
-	.then(function(uid){
+exports.appGetUser = function(req, res){
+	var	userIdOrName = req.params[0],
+		user;
+	var externalProfileInfos = plugins.filter(p => p.externalProfile).map(function(p){
+		return { name:p.name, ep:p.externalProfile }
+	});
+	db.on().then(function(){
+		return userIdOrName==+userIdOrName ? this.getUserById(userIdOrName) : this.getUserByName(userIdOrName)
+	}).then(function(u){
+		user = u;
+		if (!user) throw new db.NoRowError();
+		return externalProfileInfos;
+	}).map(function(epi){
+		return this.getPlayerPluginInfo(epi.name, user.id);
+	}).map(function(ppi, i){
+		if (ppi) externalProfileInfos[i].html = externalProfileInfos[i].ep.render(ppi.info);
+	}).then(function(){
 		return [
-			this.getUserById(uid),
-			this.listRecentUserRooms(uid)
+			this.getUserInfo(user.id),
+			this.listRecentUserRooms(user.id)
 		]
-	}).spread(function(user, rooms){
-		rooms.forEach(function(r){ r.path = '../'+server.roomPath(r) });
-		res.render('user.jade', {user:user, rooms:rooms});
+	}).spread(function(info, rooms){
+		rooms.forEach(function(r){
+			r.path = '../'+server.roomPath(r)
+		});
+		let vars = {
+			user:user, userinfo:info, avatar:avatarsrc(user.avatarsrc, user.avatarkey),
+			rooms:rooms
+		};
+		res.render('user.jade', { vars:vars, externalProfileInfos:externalProfileInfos });
 	}).catch(db.NoRowError, function(){
 		server.renderErr(res, "User not found", '../');
 	}).catch(function(err){

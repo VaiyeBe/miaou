@@ -1,14 +1,14 @@
 doctype html
 html
 	head
-		title Miaou - Tout cassé !
+		title Miaou - Error 
 		link(rel="icon",type="image/png",href="static/M-32.png")
-		link(rel='stylesheet', href=base+'static/main.css')
+		link(rel='stylesheet', href=base+'static/themes/'+theme+'/miaou.css')
 	body
 		div#centerer
 			div.dialog.centered
-				div.dialog_title An error occured
-				div.dialog_content
+				div.dialog-title An error occured
+				div.dialog-content
 					p#err.error= error
-				div.dialog_buttons
-					button(onclick="location='/'") Home			
+				div.dialog-buttons
+					a.button(href=base+"rooms") Home			
